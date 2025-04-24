@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Here you would typically send the form data to a server
             // For this example, we'll just show an alert
-            alert('Obrigado pelo seu interesse! Um especialista entrará em contato em breve.');
             this.reset();
         });
     }
