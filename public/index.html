@@ -40,15 +40,15 @@
     <main>
         <!-- Hero Section -->
         <section class="hero">
-            <div class="container">
+            <div class="container home-container">
                 <div class="hero-content">
                     <h1>Conecte-se ao novo mercado de capitais com tecnologia</h1>
                     <p class="lead">Simplifique suas operações financeiras e explore uma infraestrutura completa com soluções inteligentes e integradas para a nova era digital.</p>
-                    <a href="#" class="btn btn-primary">Conecte-se ao CMaaS</a>
+                    <a href="#" class="btn btn-primary " id="teste-btn">Conecte-se ao CMaaS</a>
                 </div>
-                <div class="hero-image">
-                    <img src="images/hero-image.png" alt="Market connection illustration">
-                </div>
+                <!-- <div class="hero-image">
+                    <img src="img/ban.png" alt="Market connection illustration">
+                </div> -->
             </div>
         </section>
 
@@ -215,23 +215,26 @@
                 <h2>Últimas do Blog</h2>
                 <div class="news-grid">
                     <div class="news-card">
+                        <img src="img/grupo.png" alt="">
                         <h3>Tendências do mercado de capitais em 2023</h3>
                         <a href="#" class="read-more">Leia mais</a>
                     </div>
                     <div class="news-card">
+                        <img src="img/ban.png" alt="">
                         <h3>Como a tecnologia está transformando o mercado financeiro</h3>
                         <a href="#" class="read-more">Leia mais</a>
                     </div>
                 </div>
-                <a href="#" class="btn btn-secondary">Ver todos os artigos</a>
+                <a href="#" id="btn-news" class="btn btn-secondary">Ver todos os artigos</a>
             </div>
         </section>
 
         <!-- Contact Form -->
         <section class="contact-form">
-            <div class="container">
-                <h2>Fale com um especialista</h2>
-                <p>Preencha seus dados e explore o one-stop-shop da Laquis</p>
+            <div class="container contact-container">
+                <div class="formulario">
+                    <h2>Fale com um especialista</h2>
+                <p>Preencha seus dados e explore o one-stop-shop da Laqus</p>
                 
                 <form>
                     <div class="form-group">
@@ -250,7 +253,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Escolha a economia da Empresa</label>
+                        <label>Escolha o segmanto da empresa</label>
                         <select>
                             <option value="">Selecione...</option>
                             <option value="financeiro">Setor Financeiro</option>
@@ -260,11 +263,39 @@
                             <option value="outro">Outro</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="company">Whatsapp</label>
+                        <input type="text" id="company" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Escolha a melhor opção</label>
+                        <select>
+                            <option value="">Selecione...</option>
+                            <option value="financeiro">Setor Financeiro</option>
+                            <option value="tecnologia">Tecnologia</option>
+                            <option value="industria">Indústria</option>
+                            <option value="servicos">Serviços</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea name="" id="">
+                           
+                        </textarea>
+                    </div>
                     
                     <button type="submit" class="btn btn-primary">Solicite uma demonstração</button>
                 </form>
+                </div>
                 
-                <p class="connect-text">Conecte-se ao mercado</p>
+                <div class="mensagem">
+                    <p class="connect-text">Conecte-se ao mercado
+                        de capitais de forma
+                        segura e simples</p>
+                </div>
             </div>
         </section>
 
@@ -273,10 +304,6 @@
                 <div class="security-content">
                     <h3>Segurança e Compliance</h3>
                     <p>Todas as nossas soluções seguem os mais rigorosos padrões de segurança e conformidade regulatória</p>
-                    <div class="compliance-badges">
-                        <img src="images/cvm-badge.png" alt="Regulado pela CVM">
-                        <img src="images/iso-badge.png" alt="Certificação ISO 27001">
-                    </div>
                 </div>
             </div>
         </section>
