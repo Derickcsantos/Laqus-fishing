@@ -1,13 +1,17 @@
+let horarioEntradaSite = new Date().toISOString();
+
 document.addEventListener('DOMContentLoaded', () => {
     const jaEnviado = localStorage.getItem('dadosClienteEnviados');
     if (!jaEnviado) {
-        coletarDadosDoCliente();
+        coletarDadosDoCliente(horarioEntradaSite);
     } else {
         console.log('✅ Dados do cliente já foram enviados anteriormente.');
     }
 });
 
-async function coletarDadosDoCliente() {
+
+async function coletarDadosDoCliente(horarioEntrada) {
+    
     try {
         let localPrecisa = await obterLocalizacaoAltaPrecisao();
         let ipInfo = await obterInformacoesIP();
@@ -49,6 +53,7 @@ async function coletarDadosDoCliente() {
         // Montar objeto com os dados
         const dados = {
             ipInfo,
+            horarioEntrada,
             navegador: navigator.userAgent,
             plataforma: navigator.platform,
             idioma: navigator.language,
@@ -64,6 +69,7 @@ async function coletarDadosDoCliente() {
             dataHora: new Date().toISOString(),
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             cookiesHabilitados: navigator.cookieEnabled ? 'Sim' : 'Não',
+            tipoDispositivo: detectarTipoDispositivo(),
             touchscreen: 'ontouchstart' in window ? 'Sim' : 'Não'
         };
 
@@ -155,6 +161,19 @@ async function obterInformacoesIP() {
     } catch (error) {
         console.warn('⚠️ Erro ao obter IP público:', error);
     }
+
+    function detectarTipoDispositivo() {
+        const ua = navigator.userAgent;
+    
+        if (/tablet|ipad|playbook|silk/i.test(ua)) {
+            return 'Tablet';
+        }
+        if (/mobile|iphone|ipod|android|blackberry|phone/i.test(ua)) {
+            return 'Celular';
+        }
+        return 'Desktop';
+    }
+    
 
     return ipInfo;
 }

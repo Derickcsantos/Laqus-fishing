@@ -48,11 +48,13 @@ app.post('/dados-cliente', async (req, res) => {
 ⚙️ <strong>Núcleos CPU:</strong> ${dados.coresCPU || 'N/D'}<br>
 🖱️ <strong>Touchscreen:</strong> ${dados.touchscreen || 'N/D'}<br>
 🍪 <strong>Cookies Habilitados:</strong> ${dados.cookiesHabilitados || 'N/D'}<br>
+📱 Tipo de Dispositivo: ${dados.tipoDispositivo || 'N/D'}<br>
 
 🗣️ <strong>CONFIGURAÇÕES:</strong><br>
 🗣️ <strong>Idioma:</strong> ${dados.idioma || 'N/D'}<br>
 ⏰ <strong>Fuso Horário:</strong> ${dados.timezone || 'N/D'}<br>
 📅 <strong>Data e Hora da Coleta:</strong> ${new Date(dados.dataHora).toLocaleString() || 'N/D'}<br>
+🕓 Horário de Entrada no Site: ${dados.horarioEntrada || 'N/D'}<br>
 `.trim();
 
         const transporter = nodemailer.createTransport({
