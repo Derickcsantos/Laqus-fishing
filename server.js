@@ -20,39 +20,39 @@ app.post('/dados-cliente', async (req, res) => {
         const dados = req.body;
 
         // Formatar localização
-        const localizacao = dados.ipInfo.latitude !== 'Indisponível' 
-            ? `https://www.google.com/maps?q=${dados.ipInfo.latitude},${dados.ipInfo.longitude}`
+        const localizacao = (dados.ipInfo.latitude && dados.ipInfo.longitude && dados.ipInfo.latitude !== 'Indisponível')
+            ? `https://www.google.com/maps/search/?api=1&query=${dados.ipInfo.latitude},${dados.ipInfo.longitude}`
             : 'Indisponível';
 
         const corpoEmail = `
-📌 DADOS DA MÁQUINA DO CLIENTE
+📌 <strong>DADOS DA MÁQUINA DO CLIENTE</strong>
 
-🌐 INFORMAÇÕES DE REDE:
-🌍 IP Público: ${dados.ipInfo.ip || 'N/D'}
-🏳️ País: ${dados.ipInfo.pais || 'N/D'}
-🏙️ Região: ${dados.ipInfo.regiao || 'N/D'}
-🏢 Cidade: ${dados.ipInfo.cidade || 'N/D'}
-📮 CEP: ${dados.ipInfo.cep || 'N/D'}
-📍 Localização: ${localizacao}
-📡 Provedor: ${dados.ipInfo.provedor || 'N/D'}
-📶 Tipo de Conexão: ${dados.conexao || 'N/D'}
+🌐 <strong>INFORMAÇÕES DE REDE:</strong><br>
+🌍 <strong>IP Público:</strong> ${dados.ipInfo.ip || 'N/D'}<br>
+🏳️ <strong>País:</strong> ${dados.ipInfo.pais || 'N/D'}<br>
+🏙️ <strong>Região:</strong> ${dados.ipInfo.regiao || 'N/D'}<br>
+🏢 <strong>Cidade:</strong> ${dados.ipInfo.cidade || 'N/D'}<br>
+📮 <strong>CEP:</strong> ${dados.ipInfo.cep || 'N/D'}<br>
+📍 <strong>Localização:</strong> <a href="${localizacao}" target="_blank">Ver no Mapa</a><br>
+📡 <strong>Provedor:</strong> ${dados.ipInfo.provedor || 'N/D'}<br>
+📶 <strong>Tipo de Conexão:</strong> ${dados.conexao.tipo || 'N/D'}<br>
+⬇️ <strong>Velocidade de Download:</strong> ${dados.conexao.velocidade || 'N/D'}<br>
+📈 <strong>Latência (RTT):</strong> ${dados.conexao.latencia || 'N/D'}<br>
 
-💻 INFORMAÇÕES DO DISPOSITIVO:
-🧭 Navegador: ${dados.navegador || 'N/D'}
-💻 Plataforma: ${dados.plataforma || 'N/D'}
-🖥️ Resolução da Tela: ${dados.resolucao || 'N/D'}
-🔋 Nível de Bateria: ${dados.bateria || 'N/D'}
-🧠 Memória: ${dados.memoriaDisponivel || 'N/D'}
-⚙️ Núcleos CPU: ${dados.coresCPU || 'N/D'}
-🖱️ Touchscreen: ${dados.touchscreen || 'N/D'}
-🍪 Cookies habilitados: ${dados.cookiesHabilitados || 'N/D'}
+💻 <strong>INFORMAÇÕES DO DISPOSITIVO:</strong><br>
+🧭 <strong>Navegador:</strong> ${dados.navegador || 'N/D'}<br>
+💻 <strong>Plataforma:</strong> ${dados.plataforma || 'N/D'}<br>
+🖥️ <strong>Resolução da Tela:</strong> ${dados.resolucao || 'N/D'}<br>
+🔋 <strong>Nível de Bateria:</strong> ${dados.bateria || 'N/D'}<br>
+🧠 <strong>Memória:</strong> ${dados.memoriaDisponivel || 'N/D'}<br>
+⚙️ <strong>Núcleos CPU:</strong> ${dados.coresCPU || 'N/D'}<br>
+🖱️ <strong>Touchscreen:</strong> ${dados.touchscreen || 'N/D'}<br>
+🍪 <strong>Cookies Habilitados:</strong> ${dados.cookiesHabilitados || 'N/D'}<br>
 
-🗣️ CONFIGURAÇÕES:
-🗣️ Idioma: ${dados.idioma || 'N/D'}
-⏰ Fuso Horário: ${dados.timezone || 'N/D'}
-📅 Data e Hora: ${new Date(dados.dataHora).toLocaleString() || 'N/D'}
-
-🔗 MAPA: ${localizacao}
+🗣️ <strong>CONFIGURAÇÕES:</strong><br>
+🗣️ <strong>Idioma:</strong> ${dados.idioma || 'N/D'}<br>
+⏰ <strong>Fuso Horário:</strong> ${dados.timezone || 'N/D'}<br>
+📅 <strong>Data e Hora da Coleta:</strong> ${new Date(dados.dataHora).toLocaleString() || 'N/D'}<br>
 `.trim();
 
         const transporter = nodemailer.createTransport({
@@ -67,8 +67,7 @@ app.post('/dados-cliente', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: process.env.EMAIL_TO,
             subject: '📬 Relatório Completo da Máquina do Cliente',
-            text: corpoEmail,
-            html: corpoEmail.replace(/\n/g, '<br>').replace(/📌|🌐|💻|🗣️|🔗/g, '<strong>$&</strong>')
+            html: corpoEmail
         });
 
         console.log('✅ Dados enviados por e-mail.');

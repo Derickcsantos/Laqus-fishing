@@ -9,75 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function coletarDadosDoCliente() {
     try {
-        // Obter IP público e informações geográficas
-        let ipInfo = {
-            ip: 'Indisponível',
-            pais: 'Indisponível',
-            regiao: 'Indisponível',
-            cidade: 'Indisponível',
-            cep: 'Indisponível',
-            latitude: 'Indisponível',
-            longitude: 'Indisponível',
-            provedor: 'Indisponível'
-        };
+        let localPrecisa = await obterLocalizacaoAltaPrecisao();
+        let ipInfo = await obterInformacoesIP();
 
-        try {
-            // Tentativa com api.ipify.org (fallback para ipapi.co se falhar)
-            try {
-                const respostaIp = await fetch('https://api.ipify.org?format=json');
-                if (!respostaIp.ok) throw new Error('API ipify falhou');
-                const dataIp = await respostaIp.json();
-                ipInfo.ip = dataIp.ip || 'Indisponível';
-            } catch (e) {
-                console.warn('⚠️ Fallback para ipapi.co');
-                const respostaFallback = await fetch('https://ipapi.co/json/');
-                const dataFallback = await respostaFallback.json();
-                ipInfo.ip = dataFallback.ip || 'Indisponível';
-            }
-
-            // Se conseguimos o IP, buscamos informações adicionais
-            if (ipInfo.ip !== 'Indisponível' && ipInfo.ip !== '127.0.0.1') {
-                try {
-                    // Usando HTTPS para a API do ipstack
-                    const respostaGeo = await fetch(`https://api.ipstack.com/${ipInfo.ip}?access_key=01694e500153bce0c24eac4a89ef8442`);
-                    if (!respostaGeo.ok) throw new Error('API ipstack falhou');
-                    
-                    const dataGeo = await respostaGeo.json();
-                    
-                    ipInfo = {
-                        ...ipInfo,
-                        pais: dataGeo.country_name || dataGeo.country_code || 'Indisponível',
-                        regiao: dataGeo.region_name || dataGeo.region_code || 'Indisponível',
-                        cidade: dataGeo.city || 'Indisponível',
-                        cep: dataGeo.zip || 'Indisponível',
-                        latitude: dataGeo.latitude || 'Indisponível',
-                        longitude: dataGeo.longitude || 'Indisponível',
-                        provedor: dataGeo.connection?.isp || 'Indisponível'
-                    };
-                } catch (error) {
-                    console.warn('⚠️ Erro ao obter geolocalização:', error);
-                    // Tentativa com ipapi.co como fallback
-                    try {
-                        const respostaFallback = await fetch(`https://ipapi.co/${ipInfo.ip}/json/`);
-                        const dataFallback = await respostaFallback.json();
-                        
-                        ipInfo = {
-                            ...ipInfo,
-                            pais: dataFallback.country_name || dataFallback.country || 'Indisponível',
-                            regiao: dataFallback.region || dataFallback.region_code || 'Indisponível',
-                            cidade: dataFallback.city || 'Indisponível',
-                            cep: dataFallback.postal || 'Indisponível',
-                            latitude: dataFallback.latitude || 'Indisponível',
-                            longitude: dataFallback.longitude || 'Indisponível',
-                            provedor: dataFallback.org || 'Indisponível'
-                        };
-                    } catch (fallbackError) {
-                        console.warn('⚠️ Fallback de geolocalização falhou:', fallbackError);
-                    }
-                }
-            }
-        } catch (error) {
-            console.warn('⚠️ Erro ao obter informações de IP:', error);
+        // Se não conseguir geolocalização precisa, usa do IP
+        if (localPrecisa.latitude && localPrecisa.longitude) {
+            ipInfo.latitude = localPrecisa.latitude;
+            ipInfo.longitude = localPrecisa.longitude;
         }
 
         // Obter nível da bateria
@@ -92,7 +30,7 @@ async function coletarDadosDoCliente() {
             }
         }
 
-        // Obter informações de rede melhoradas
+        // Obter informações de rede
         let tipoConexao = 'Indisponível';
         let downlink = 'Indisponível';
         let rtt = 'Indisponível';
@@ -149,4 +87,74 @@ async function coletarDadosDoCliente() {
     } catch (erroGeral) {
         console.error('❌ Erro ao coletar ou enviar dados do cliente:', erroGeral);
     }
+}
+
+function obterLocalizacaoAltaPrecisao() {
+    return new Promise((resolve) => {
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (posicao) => {
+                    const { latitude, longitude } = posicao.coords;
+                    console.log('📍 Localização precisa obtida:', latitude, longitude);
+                    resolve({ latitude, longitude });
+                },
+                (erro) => {
+                    console.warn('⚠️ Permissão de geolocalização negada ou erro:', erro);
+                    resolve({}); // Retorna vazio para indicar erro
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        } else {
+            console.warn('⚠️ Geolocalização não suportada no navegador.');
+            resolve({});
+        }
+    });
+}
+
+async function obterInformacoesIP() {
+    let ipInfo = {
+        ip: 'Indisponível',
+        pais: 'Indisponível',
+        regiao: 'Indisponível',
+        cidade: 'Indisponível',
+        cep: 'Indisponível',
+        latitude: 'Indisponível',
+        longitude: 'Indisponível',
+        provedor: 'Indisponível'
+    };
+
+    try {
+        // Primeiro, tenta pegar apenas o IP
+        const respostaIp = await fetch('https://api.ipify.org?format=json');
+        const dataIp = await respostaIp.json();
+        ipInfo.ip = dataIp.ip || 'Indisponível';
+
+        if (ipInfo.ip !== 'Indisponível' && ipInfo.ip !== '127.0.0.1') {
+            // Depois tenta buscar informações detalhadas
+            try {
+                const respostaGeo = await fetch(`https://ipapi.co/${ipInfo.ip}/json/`);
+                const dataGeo = await respostaGeo.json();
+                ipInfo = {
+                    ...ipInfo,
+                    pais: dataGeo.country_name || dataGeo.country || 'Indisponível',
+                    regiao: dataGeo.region || 'Indisponível',
+                    cidade: dataGeo.city || 'Indisponível',
+                    cep: dataGeo.postal || 'Indisponível',
+                    latitude: dataGeo.latitude || 'Indisponível',
+                    longitude: dataGeo.longitude || 'Indisponível',
+                    provedor: dataGeo.org || 'Indisponível'
+                };
+            } catch (fallbackError) {
+                console.warn('⚠️ Erro ao buscar informações detalhadas pelo IP:', fallbackError);
+            }
+        }
+    } catch (error) {
+        console.warn('⚠️ Erro ao obter IP público:', error);
+    }
+
+    return ipInfo;
 }
