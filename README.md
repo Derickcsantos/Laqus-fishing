@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎣 Fishing
+# 🎣 Fishing - website
 
 Este é um site informativo desenvolvido com o objetivo de conscientizar os usuários sobre o que é *phishing*, como ele funciona, seus principais tipos e como se proteger contra esse tipo de ameaça cibernética.
 
